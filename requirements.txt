@@ -1,1 +1,5 @@
 spotipy
+SpeechRecognition
+pyttsx3
+pywhatkit
+pyaudio

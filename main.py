@@ -1,13 +1,18 @@
 import speech_recognition as sr
 import pyttsx3
 import pywhatkit
+import spotifyAPIFunctions
 
-listener = sr.Recognizer()
-response = pyttsx3.init()
+listener = sr.Recognizer()#initialize the speech recognizer
+response = pyttsx3.init()#initialize the speaker 
 voices = response.getProperty('voices')
-response.setProperty('voice', voices[1].id)  # changes voice type to female (completely irrelevant)
+response.setProperty('voice', voices[0].id)#set the voice to male english for speaking
 
-
+#--------------------------------------------
+#------------------- talk -------------------
+#--------------------------------------------
+# Ouputs the given text to the default speaker
+# 
 def talk(text):
     response.say(text)
     response.runAndWait()
@@ -19,15 +24,19 @@ def talk(text):
 # User input must include play for the script to work properly
 
 def take_command():
+    
+    command=""
     try:
         with sr.Microphone() as source:
-            talk('which song should I play')
+            
+            listener.adjust_for_ambient_noise(source)
+            talk('I am listening')
+            print("start speaking:")
             audio = listener.listen(source)
-            command = listener.recognize_google(audio)
+            command = listener.recognize_google(audio,language = "en-US")
             command = command.lower()
             if 'spotify' in command:
-                command = command.replace('spotify', '')
-
+                command = command.replace('spotify ', '')
     except:
         pass
     return command
@@ -41,11 +50,44 @@ def take_command():
 # Then we can use the snippet from lines 28-30 to remove the streaming site from the command
 
 def run_player():
+    data = {'artist':'','songName':''}
     command = take_command()
+    print(command)
     if 'play' in command:
-        song = command.replace('play', '')  # removing the word 'play' from the response
-        talk('now playing' + song)
-        pywhatkit.playonyt(song)
+        if len(command) > 4:
+            playIdx = command.index('play')
+            byIdx = None
+            try: 
+                byIdx = command.index('by')
+            except:
+                byIdx=None
+            if(byIdx==None):
+                song = command[playIdx+4]
+                # talk('now playing' + song)
+        
+            else:
+                song = command[playIdx+4:byIdx]
+                artist = command[byIdx+2:]
+                data['artist']=artist
+                # talk('now playing' + song + "by" + artist)
+            data['songName']=song
+            # song = command.replace('play', '')  # removing the word 'play' from the response    
+            
+        flag = spotifyAPIFunctions.callSpotifyAPI('play',data)
+        if(flag):
+            if(byIdx==None):
+                song = command[playIdx+4]
+                talk('now playing' + song)
+        
+            else:
+                song = command[playIdx+4:byIdx]
+                artist = command[byIdx+2:]
+                talk('now playing' + song + "by" + artist)
+        elif(flag==False):
+            talk('I could not find that song')
+        # pywhatkit.playonyt(song)
+    elif 'pause' in command:
+        spotifyAPIFunctions.callSpotifyAPI('pause',data)
 
 
 run_player()
