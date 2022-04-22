@@ -63,15 +63,11 @@ def run_player():
                 byIdx=None
             if(byIdx==None):
                 song = command[playIdx+4]
-                # talk('now playing' + song)
-        
             else:
                 song = command[playIdx+4:byIdx]
                 artist = command[byIdx+2:]
                 data['artist']=artist
-                # talk('now playing' + song + "by" + artist)
-            data['songName']=song
-            # song = command.replace('play', '')  # removing the word 'play' from the response    
+            data['songName']=song   
             
         flag = spotifyAPIFunctions.callSpotifyAPI('play',data)
         if(flag):

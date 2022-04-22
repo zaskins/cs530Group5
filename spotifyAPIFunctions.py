@@ -123,7 +123,7 @@ def callSpotifyAPI(action,data):
     client_secret = "d54215d8d0714a22b20aa5e15d0e079f",
     redirect_uri="http://localhost/8888/callback",
     scope="streaming,user-library-read,user-modify-playback-state,user-read-currently-playing,user-read-playback-state"))#authenticate with podium API to be able to make calls to API
-    print(sp.devices())
+
     if(not checkCurrentDevice(sp,device_ID)):#check if the current playback device is the raspberry PI
        transferPlayback(sp,device_ID)#if it is not then transfer it to the raspberry PI
     if(action=='play' and (data['songName']!='' or data['artist']!='')):#if the user has specified play with song data then find and play the song
