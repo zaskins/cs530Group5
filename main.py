@@ -53,24 +53,24 @@ def run_player():
     data = {'artist':'','songName':''}
     command = take_command()
     print(command)
-    if 'play' in command:
-        if len(command) > 4:
+    if 'play' in command: #if user said play
+        if len(command) > 4:#if the user only said play then play current song
             playIdx = command.index('play')
             byIdx = None
-            try: 
+            try: #check if user specified an artist
                 byIdx = command.index('by')
             except:
                 byIdx=None
-            if(byIdx==None):
+            if(byIdx==None):#were just going to grab the song if artist not specified
                 song = command[playIdx+4]
-            else:
+            else:#grab artist and the song name othewise
                 song = command[playIdx+4:byIdx]
                 artist = command[byIdx+2:]
                 data['artist']=artist
             data['songName']=song   
             
-        flag = spotifyAPIFunctions.callSpotifyAPI('play',data)
-        if(flag):
+        flag = spotifyAPIFunctions.callSpotifyAPI('play',data)#call functions that interact with spotify API
+        if(flag):#if song was found then say song being played
             if(byIdx==None):
                 song = command[playIdx+4]
                 talk('now playing' + song)
@@ -79,11 +79,9 @@ def run_player():
                 song = command[playIdx+4:byIdx]
                 artist = command[byIdx+2:]
                 talk('now playing' + song + "by" + artist)
-        elif(flag==False):
+        elif(flag==False):#othewise let user know that song could not be found
             talk('I could not find that song')
-        # pywhatkit.playonyt(song)
-    elif 'pause' in command:
+    elif 'pause' in command:#if the user said pause then pause current song playing
         spotifyAPIFunctions.callSpotifyAPI('pause',data)
-
 
 run_player()
